@@ -31,15 +31,6 @@ def get_duration(audio_path: Path) -> float:
 def create_manifest(root: Path, split: str, out_path: Path):
     csv_path = root / f"{split}.csv"
     df = pd.read_csv(csv_path)
-    
-    # We need to map the relative 'file' path to the absolute audio path
-    # Your inspect_csv.py shows 'file' column is like 'geo/clips/train_0.wav'
-    # We need to find the base of that path, which is `root`'s parent
-    # e.g., if root = /data/geo, file = geo/clips/train_0.wav
-    # abs_path = /data / geo/clips/train_0.wav
-    
-    # A robust way: assume 'geo/clips/...' is relative to the *parent* of the root
-    # e.g., root is '.../geo', so parent is '.../'
     base_data_dir = root.parent 
 
     print(f"Writing manifest for {split}...")

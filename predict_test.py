@@ -58,8 +58,6 @@ def main():
             print(f"Warning: No transcript found for {abs_path}. Using empty string.")
             transcript_text = ""
         else:
-            # THIS IS THE FIX:
-            # Extract the .text attribute from the Hypothesis object
             transcript_text = hypothesis.text
             
         final_transcripts.append(transcript_text)
