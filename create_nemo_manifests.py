@@ -10,7 +10,6 @@ import pandas as pd
 import soundfile as sf
 from tqdm import tqdm
 
-# Copied directly from your make_manifest_and_stats.py for consistency
 def normalize(text: str) -> str:
     if not isinstance(text, str):
         return ""
@@ -60,7 +59,7 @@ def create_manifest(root: Path, split: str, out_path: Path):
             
             fout.write(json.dumps(entry) + '\n')
             
-    # For the test set, we ALSO need a simple mapping file for the final submission
+    # For the test set, we also use a simple mapping file for the final submission
     if split == "test":
         map_path = out_path.parent / "test_submission_map.csv"
         print(f"Writing test submission map to {map_path}...")

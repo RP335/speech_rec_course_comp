@@ -16,14 +16,12 @@ def main():
     ap.add_argument("--batch_size", type=int, default=16, help="Batch size for inference")
     args = ap.parse_args()
 
-    # --- Load Fine-Tuned Model ---
     print(f"Loading fine-tuned model from {args.finetuned_model}...")
     asr_model = nemo_asr.models.ASRModel.restore_from(args.finetuned_model)
     # asr_model = nemo_asr.models.ASRModel.from_pretrained(args.finetuned_model)
     asr_model = asr_model.to('cuda') # Move model to GPU
     asr_model.eval()
 
-    # --- Get File Paths from Manifest ---
     print(f"Reading test manifest: {args.test_manifest}")
     abs_paths = []
     with open(args.test_manifest, 'r') as f:
@@ -31,7 +29,6 @@ def main():
             entry = json.loads(line)
             abs_paths.append(entry['audio_filepath'])
 
-    # --- Run Transcription ---
     print(f"Transcribing {len(abs_paths)} test files (this may take a while)...")
     transcriptions = asr_model.transcribe(
             abs_paths, 
@@ -43,15 +40,12 @@ def main():
     if len(abs_paths) != len(transcriptions):
         raise ValueError("Mismatch between number of files and transcriptions!")
         
-    # Create a lookup map from absolute path to the Hypothesis object
     path_to_hypothesis_map = dict(zip(abs_paths, transcriptions))
 
-    # Use the submission map to get the original relative paths
     df_map = pd.read_csv(args.submission_map)
     
     final_transcripts = []
     for abs_path in df_map['absolute_path']:
-        # Find the hypothesis for this path
         hypothesis = path_to_hypothesis_map.get(abs_path)
         
         if hypothesis is None:

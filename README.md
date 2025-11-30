@@ -79,13 +79,21 @@ python create_nemo_manifests.py --root geo_data/geo_ASR_challenge_2025/geo --out
 
 ### 3. Fine-tune the Model
 
-Use the following command to fine-tune the ASR model:
+Before running the next command, I had to do this otherwise an error comes 
+
+```
+export NUMBA_CUDA_USE_NVIDIA_BINDING=1
+```
+
+Then use the following command to fine-tune the ASR model:
 ```bash
-python finetune_nemo.py \
+python finetune_optimized.py \
     --train_manifest ./nemo_data/train_manifest.json \
     --dev_manifest ./nemo_data/dev_manifest.json \
-    --epochs 10 \
-    --batch_size 16
+    --epochs 30 \
+    --batch_size 32 \
+    --specaugment
+
 ```
 
 ---
@@ -101,4 +109,4 @@ python predict_test.py \
     --output_csv submission.csv
 ```
 
-**Note:** Replace `epoch=9-val_wer=0.1234.ckpt` with your actual checkpoint filename.
+**Note:** Replace `epoch=9-val_wer=0.1234.ckpt` with your actual checkpoint filename like `geo_finetuned_optimised.nemo` or whatever the `python finetuned_optimised....` script has specified.

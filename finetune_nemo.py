@@ -15,39 +15,31 @@ def main():
     ap.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
     args = ap.parse_args()
 
-    # --- Load Pre-trained Model ---
     print("Loading pre-trained model...")
     asr_model = nemo_asr.models.ASRModel.from_pretrained("nvidia/stt_eo_conformer_transducer_large")
 
-    # --- Setup Config ---
     print("Setting up configuration...")
     
-    # Update training data config
     asr_model.cfg.train_ds.manifest_filepath = args.train_manifest
     asr_model.cfg.train_ds.batch_size = args.batch_size
     asr_model.cfg.train_ds.shuffle = True
     asr_model.cfg.train_ds.num_workers = 4
     
-    # Update validation data config
     asr_model.cfg.validation_ds.manifest_filepath = args.dev_manifest
     asr_model.cfg.validation_ds.batch_size = args.batch_size
     asr_model.cfg.validation_ds.shuffle = False
     asr_model.cfg.validation_ds.num_workers = 4
 
-    # Set up optimizer and scheduler
     asr_model.cfg.optim.name = 'adamw'
     asr_model.cfg.optim.lr = args.lr
     asr_model.cfg.optim.sched.name = 'CosineAnnealing'
     asr_model.cfg.optim.sched.warmup_steps = 500
     
-    # Setup training and validation data
     asr_model.setup_training_data(asr_model.cfg.train_ds)
     asr_model.setup_validation_data(asr_model.cfg.validation_ds)
     
-    # Setup optimizer
     asr_model.setup_optimization(asr_model.cfg.optim)
     
-    # --- Setup Trainer ---
     print("Setting up trainer...")
     checkpoint_callback = ModelCheckpoint(
         dirpath='./checkpoints',
